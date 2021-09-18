@@ -7,15 +7,11 @@ import { IWService } from 'src/app/services/iw.service';
 })
 
 export class LoginPageComponent implements OnInit {
-    loading = false;
-    
     constructor(public iwService: IWService) { }
 
     ngOnInit() { }
 
     async login() {
-        this.loading = true;
         await this.iwService.login();
-        this.loading = false;
     }
 }

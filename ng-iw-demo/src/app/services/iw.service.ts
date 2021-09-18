@@ -62,7 +62,8 @@ export class IWService {
         const result = await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/extr-sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent, "Extr");
-        result.contentSigned
+        
+        debugger;
         return await this.httpClient.post<SDKResponse>(`${this.controller}/process-signature`, result).toPromise();
     }
 
