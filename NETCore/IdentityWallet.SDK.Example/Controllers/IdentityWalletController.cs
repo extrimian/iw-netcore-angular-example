@@ -65,7 +65,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("handshake")]
         public async Task<ActionResult<SDKCommunicationMessage>> Handshake(SDKOperationInstance state)
         {
-            return await IdentityWalletSDK.Handshake(state, "es_ES");
+            return await IdentityWalletSDK.Handshake(state, IWLanguage.es_ES);
         }
 
         [HttpPost("vc-login")]
@@ -98,6 +98,12 @@ namespace IdentityWallet.SDK.Example.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        [HttpPost("sign-content")]
+        public async Task<ActionResult<SDKCommunicationMessage>> SignContent(SDKOperationInstance state)
+        {
+            return await IdentityWalletSDK.SignContent(state, "Este es el contenido a firmar");
         }
 
         [HttpPost("extr-sign-content")]
@@ -154,7 +160,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         }
 
         [HttpPost("process-signature")]
-        public ActionResult ProcessSignature(ExtrContentSigned contentSigned)
+        public async Task<ActionResult> ProcessSignature(ExtrContentSigned contentSigned)
         {
             Console.WriteLine(
                 $"r: {contentSigned.ContentSigned.R} {Environment.NewLine}" +
@@ -164,6 +170,8 @@ namespace IdentityWallet.SDK.Example.Controllers
                 $"Message: {contentSigned.Message} {Environment.NewLine}" +
                 $"Verification Method: {contentSigned.VerificationMethod} {Environment.NewLine}"
             );
+
+            Console.WriteLine("Result: " + await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.ContentSigned.Signature, contentSigned.VerificationMethod));
 
             //Consumir Smart Contract con la firma
 
