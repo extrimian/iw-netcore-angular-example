@@ -48,6 +48,12 @@ namespace IdentityWallet.SDK.Example.Controllers
             return unpacked;
         }
 
+        [HttpGet("hash-friendly-content")]
+        public async Task<ActionResult<string>> HashFriendlyContent()
+        {
+            return await APIWallet.HashFriendlyContent("Cambiar la propiedad de la identidad 0xD9001096218e4b7c30ec1B7C85A61AfAe3e450aD al address 0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7");
+        }
+
         private Task LoggedIn(LoginVC loginVC, LoginCredentialSubject subject)
         {
             HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", "X-AccessToken");
@@ -106,7 +112,7 @@ namespace IdentityWallet.SDK.Example.Controllers
             return await IdentityWalletSDK.SignContent(state, "Este es el contenido a firmar");
         }
 
-        [HttpPost("extr-sign-content")]
+       [HttpPost("extr-sign-content")]
         public async Task<ActionResult<SDKCommunicationMessage>> ExtrSignContent(SDKOperationInstance state)
         {
             return await IdentityWalletSDK.ExtrSignContent(state, new ExtrSignContentRequest

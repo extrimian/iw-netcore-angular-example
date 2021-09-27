@@ -8,10 +8,13 @@ import { SignService } from 'src/app/services/sign.service';
 })
 
 export class HomePageComponent implements OnInit {
+    mainAddress?: string;
 
     constructor(private iwService: IWService) { }
 
-    ngOnInit() { }
+    async ngOnInit(): Promise<void> {
+        this.mainAddress = await this.iwService.iw.getMainAddress();
+    }
 
     async sign() {
         await this.iwService.sign();
