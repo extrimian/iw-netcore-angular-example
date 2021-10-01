@@ -5,12 +5,13 @@ import { IdentityWallet, SDKOperationRequest, SDKResponse } from "@extrimian/ide
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 
+
 @Injectable({ providedIn: 'root' })
 export class IWService {
     iw: IdentityWallet;
     controller = `${environment.DAPP_API_URL}/identitywallet`;
 
-    handshakeFinished: boolean = false; 
+    handshakeFinished: boolean = false;
 
     constructor(private router: Router,
         private httpClient: HttpClient,
@@ -31,6 +32,10 @@ export class IWService {
             this.router.navigate(["home"]);
         }
 
+        this.iw.walletLogout = () => {
+          window.location.reload();
+        };
+
         await this.iw.init();
     }
 
@@ -46,7 +51,7 @@ export class IWService {
         await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/vc-login`, state).toPromise();
         }, SDKOperationRequest.Login);
-     
+
         console.log("Login finished");
     }
 
@@ -62,8 +67,7 @@ export class IWService {
         const result = await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/extr-sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent, "Extr");
-        
-        debugger;
+
         return await this.httpClient.post<SDKResponse>(`${this.controller}/process-signature`, result).toPromise();
     }
 
