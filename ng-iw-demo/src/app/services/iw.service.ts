@@ -109,7 +109,7 @@ export class IWService {
                 state: state,
                 did: did
             }).toPromise();
-        }, SDKOperationRequest.SignContent) as any;
+        }, SDKOperationRequest.SignContent, "Extr");
 
         await this.httpClient.post<{ newDid: string }>(`${this.controller}/process-add-assertion-method`, {
             content: result.encryptedContent,
