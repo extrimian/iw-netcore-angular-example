@@ -8,6 +8,7 @@ using IdentityWallet.SDK.Models.DIDCommMessages;
 using IdentityWallet.SDK.Models.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -41,17 +42,33 @@ namespace IdentityWallet.SDK.Example.Controllers
             APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD);
         }
 
-        [HttpPost("add-vm")]
-        public async Task<ActionResult<SDKCommunicationMessage>> AddVM(SDKOperationInstance state)
+        [HttpPost("create-did-change-owner")]
+        public async Task<ActionResult<CreateDIDResponse>> CreateDIDChangeOwner(CreateDIDRequest request)
         {
             var registry = new ExtrimianRegistry();
 
-            var content = await registry.GetChangeOwnerData("did:ethr:rsk:testnet:0x052c6e88FccE6da16aBcaB53C30Dfd0Cc3c9Db59", new ChangeOwnerData
+            var newDID = await registry.CreateDIDControlledBy(request.OwnerDid);
+
+            return new CreateDIDResponse
             {
-                NewOwner = "0x052c6e88FccE6da16aBcaB53C30Dfd0Cc3c9Db59",
+                NewDid = newDID
+            };
+        }
+
+        [HttpPost("add-assertion-method")]
+        public async Task<ActionResult<SDKCommunicationMessage>> AddAssertionMethod(AddAssertionMethodRequest request)
+        {
+            var registry = new ExtrimianRegistry();
+
+            var content = await registry.GetAddAssertionMethodData(request.Did, new AssertionMethodData
+            {
+                Algorithm = AlgorithmType.Secp256k1,
+                Base = Base.Hex,
+                ExpiresIn = 31556952000,
+                Value = "0x5f093f1412d227bc8a34d267932b36e5eceb1edb4321d2d9964b24dd0a5b86e5"
             });
 
-            return await IdentityWalletSDK.ExtrSignContent(state, new ExtrSignContentRequest
+            return await IdentityWalletSDK.ExtrSignContent(request.State, new ExtrSignContentRequest
             {
                 TemplateId = content.TemplateId,
                 Content = new ExtrSignContentData
@@ -61,19 +78,22 @@ namespace IdentityWallet.SDK.Example.Controllers
             });
         }
 
-        [HttpPost("process-add-vm")]
-        public async Task<ActionResult> ProcessAddVM(DecryptContentRequest request)
+        [HttpPost("process-add-assertion-method")]
+        public async Task<ActionResult<SDKCommunicationMessage>> ProcessAddAssertionMethod(DecryptContentRequest request)
         {
-            var result = await IdentityWalletSDK.DecryptContent(request.Content);
+            var content = await IdentityWalletSDK.DecryptContent(request.Content);
 
-            var resolver = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry();
 
-            await resolver.ChangeOwner("did:ethr:rsk:testnet:0x052c6e88FccE6da16aBcaB53C30Dfd0Cc3c9Db59", new ChangeOwnerSignedData
+            await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
             {
-                NewOwner = "0x052c6e88FccE6da16aBcaB53C30Dfd0Cc3c9Db59",
-                SignR = result.SignedContent.R,
-                SignV = Int64.Parse(result.SignedContent.V),
-                SignS = result.SignedContent.S,
+                Algorithm = AlgorithmType.Secp256k1,
+                Base = Base.Hex,
+                ExpiresIn = 31556952000,
+                Value = "0x5f093f1412d227bc8a34d267932b36e5eceb1edb4321d2d9964b24dd0a5b86e5",
+                SignR = content.SignedContent.R,
+                SignS = content.SignedContent.S,
+                SignV = int.Parse(content.SignedContent.V),
             });
 
             return Ok();
@@ -99,8 +119,9 @@ namespace IdentityWallet.SDK.Example.Controllers
 
         private Task LoggedIn(LoginVC loginVC, LoginCredentialSubject subject)
         {
-            HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", "X-AccessToken");
+            HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", new StringValues(new[] { "X-AccessToken", "x-did" }));
             HttpContext.Response.Headers.Add("X-AccessToken", GenerateToken(subject.name, subject.did));
+            HttpContext.Response.Headers.Add("x-did", subject.did);
             return Task.CompletedTask;
         }
 
@@ -218,6 +239,13 @@ namespace IdentityWallet.SDK.Example.Controllers
             var result = await APIWallet.VerifySignContent(contentSigned.Message,
                 contentSigned.SignedContent.Signature, contentSigned.VerificationMethod);
 
+            var capabilityDelegation = await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod, VerificationRelationship.CapabilityDelegation);
+            Console.WriteLine($"CapabilityDelegation Verification Result: {capabilityDelegation}"); //Debe dar false ya que no está la entrada en el DID Document
+
+
+            var auth = await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod, VerificationRelationship.Authentication);
+            Console.WriteLine($"Authentication Verification Result: {capabilityDelegation}"); //Debe dar true ya que existe la entrada en el DID Document
+
             if (result)
             {
                 Console.WriteLine(
@@ -250,6 +278,7 @@ namespace IdentityWallet.SDK.Example.Controllers
             );
 
             Console.WriteLine("Result: " + await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod));
+
 
 
             //Consumir Smart Contract con la firma

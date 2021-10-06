@@ -28,6 +28,7 @@ export class IWService {
         this.iw.loggedIn = (response) => {
             console.log("LoggedIN", response.headers["x-accesstoken"]);
             this.authService.setToken(response.headers["x-accesstoken"]);
+            this.authService.setDID(response.headers["x-did"]);
             this.router.navigate(["home"]);
         }
 
@@ -70,7 +71,7 @@ export class IWService {
 
     async extrIdentitySign() {
         const result = await this.iw.sdkRequest(async (state) => {
-            return await this.httpClient.post<SDKResponse>(`${this.controller}/add-vm`, state).toPromise();
+            return await this.httpClient.post<SDKResponse>(`${this.controller}/extr-sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent, "Extr");
 
         console.log(result);
@@ -90,5 +91,29 @@ export class IWService {
         }, SDKOperationRequest.SignContent);
 
         console.log(result);
+    }
+
+    async createDIDChangeOwner(): Promise<string> {
+        const did = await this.authService.getDID();
+
+        const result = await this.httpClient.post<{ newDid: string }>(`${this.controller}/create-did-change-owner`, {
+            ownerDid: did
+        }).toPromise();
+
+        return result.newDid;
+    }
+
+    async addAssertionMethod(did: string) {
+        const result = await this.iw.sdkRequest(async (state) => {
+            return await this.httpClient.post<SDKResponse>(`${this.controller}/add-assertion-method`, {
+                state: state,
+                did: did
+            }).toPromise();
+        }, SDKOperationRequest.SignContent) as any;
+
+        await this.httpClient.post<{ newDid: string }>(`${this.controller}/process-add-assertion-method`, {
+            content: result.encryptedContent,
+            did: did,
+        }).toPromise();
     }
 }
