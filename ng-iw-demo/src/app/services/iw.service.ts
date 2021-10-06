@@ -10,7 +10,7 @@ export class IWService {
     iw: IdentityWallet;
     controller = `${environment.DAPP_API_URL}/identitywallet`;
 
-    handshakeFinished: boolean = false; 
+    handshakeFinished: boolean = false;
 
     constructor(private router: Router,
         private httpClient: HttpClient,
@@ -46,7 +46,7 @@ export class IWService {
         await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/vc-login`, state).toPromise();
         }, SDKOperationRequest.Login);
-     
+
         console.log("Login finished");
     }
 
@@ -62,9 +62,26 @@ export class IWService {
         const result = await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/extr-sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent, "Extr");
-        
-        debugger;
-        return await this.httpClient.post<SDKResponse>(`${this.controller}/process-signature`, result).toPromise();
+
+        console.log(result);
+
+        return result;
+    }
+
+    async extrIdentitySign() {
+        const result = await this.iw.sdkRequest(async (state) => {
+            return await this.httpClient.post<SDKResponse>(`${this.controller}/add-vm`, state).toPromise();
+        }, SDKOperationRequest.SignContent, "Extr");
+
+        console.log(result);
+
+        return result;
+    }
+
+    async decryptContent(encryptedContent: string) {
+        await this.httpClient.post(`${this.controller}/decrypt-content`, {
+            content: encryptedContent
+        }).toPromise();
     }
 
     async sign() {

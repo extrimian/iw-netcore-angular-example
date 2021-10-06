@@ -21,6 +21,13 @@ export class HomePageComponent implements OnInit {
     }
 
     async extrSign() {
-        await this.iwService.extrSign();
+        const response: any = await this.iwService.extrSign();
+        console.log(response);
+        await this.iwService.decryptContent(response.encryptedContent);
+    }
+
+    async extrIdentitySign() {
+        const response: any = await this.iwService.extrIdentitySign();
+        await this.iwService.decryptContent(response.encryptedContent);
     }
 }
