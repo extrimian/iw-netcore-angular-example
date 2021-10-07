@@ -1,4 +1,5 @@
-﻿using IdentityWallet.SDK.Models;
+﻿using IdentityWallet.SDK.Example.Models;
+using IdentityWallet.SDK.Models;
 using IdentityWallet.SDK.Models.DIDCommMessages;
 using IdentityWallet.SDK.Models.Requests;
 using Microsoft.AspNetCore.Http;
@@ -24,8 +25,8 @@ namespace IdentityWallet.SDK.Example.Controllers
         const string IW_DID = "did:ethr:rsk:testnet:0xC2Cb8a25eD3F1f0d5ba2E506B0500fd8322aAF15";
         const string IW_VM = "did:ethr:rsk:testnet:0xC2Cb8a25eD3F1f0d5ba2E506B0500fd8322aAF15#delegate-1";
 
-        const string API_WALLET_USERNAME = "dapp@anh.com";
-        const string API_WALLET_PWD = "DappANH1234";
+        const string API_WALLET_USERNAME = "anh@extrimian.com";
+        const string API_WALLET_PWD = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
 
         public APIWallet APIWallet { get; set; }
 
@@ -165,23 +166,44 @@ namespace IdentityWallet.SDK.Example.Controllers
             });
         }
 
-        [HttpPost("process-signature")]
-        public async Task<ActionResult> ProcessSignature(ExtrContentSigned contentSigned)
+
+        [HttpPost("decrypt-content")]
+        public async Task<ActionResult> DecryptContent(DecryptContentRequest decryptContentRequest)
         {
-            Console.WriteLine(
-                $"r: {contentSigned.ContentSigned.R} {Environment.NewLine}" +
-                $"s: {contentSigned.ContentSigned.S} {Environment.NewLine}" +
-                $"v: {contentSigned.ContentSigned.V} {Environment.NewLine}" +
-                $"Signature: {contentSigned.ContentSigned.Signature} {Environment.NewLine}" +
-                $"Message: {contentSigned.Message} {Environment.NewLine}" +
-                $"Verification Method: {contentSigned.VerificationMethod} {Environment.NewLine}"
-            );
+            Console.WriteLine(decryptContentRequest.Content);
 
-            Console.WriteLine("Result: " + await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.ContentSigned.Signature, contentSigned.VerificationMethod));
+            var contentSigned = await IdentityWalletSDK.DecryptContent(decryptContentRequest.Content);
 
-            //Consumir Smart Contract con la firma
+            var result = await APIWallet.VerifySignContent(contentSigned.Message,
+                contentSigned.SignedContent.Signature, contentSigned.VerificationMethod);
+
+            var capabilityDelegation = await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod, VerificationRelationship.CapabilityDelegation);
+            Console.WriteLine($"CapabilityDelegation Verification Result: {capabilityDelegation}"); //Debe dar false ya que no está la entrada en el DID Document
+
+
+            var auth = await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod, VerificationRelationship.Authentication);
+            Console.WriteLine($"Authentication Verification Result: {capabilityDelegation}"); //Debe dar true ya que existe la entrada en el DID Document
+
+            if (result)
+            {
+                Console.WriteLine(
+                    $"r: {contentSigned.SignedContent.R} {Environment.NewLine}" +
+                    $"s: {contentSigned.SignedContent.S} {Environment.NewLine}" +
+                    $"v: {contentSigned.SignedContent.V} {Environment.NewLine}" +
+                    $"Signature: {contentSigned.SignedContent.Signature} {Environment.NewLine}" +
+                    $"Message: {contentSigned.Message} {Environment.NewLine}" +
+                    $"Verification Method: {contentSigned.VerificationMethod} {Environment.NewLine}"
+                );
+            }
+            else
+            {
+                throw new Exception("Ha ocurrido un error al validar la firma.");
+            }
 
             return Ok();
         }
+
+        
+       
     }
 }
