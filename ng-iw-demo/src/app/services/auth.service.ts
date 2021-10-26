@@ -13,4 +13,12 @@ export class AuthService {
     getToken(): string | null {
         return this._token;
     }
+
+    setDID(token: string) {
+        this._token = token;
+    }
+
+    getDID(): string | null {
+        return this._token;
+    }
 }
