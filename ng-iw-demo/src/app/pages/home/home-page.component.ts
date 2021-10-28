@@ -10,12 +10,14 @@ import { SignService } from 'src/app/services/sign.service';
 
 export class HomePageComponent implements OnInit {
     mainAddress?: string;
+    mainDID?: string;
 
     constructor(private iwService: IWService,
         private authService: AuthService) { }
 
     async ngOnInit(): Promise<void> {
         this.mainAddress = await this.iwService.iw.getMainAddress();
+        this.mainDID = await this.iwService.iw.getMainDID();
     }
 
     async sign() {

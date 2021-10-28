@@ -26,9 +26,9 @@ namespace IdentityWallet.SDK.Example.Controllers
     {
         private IdentityWalletSDK IdentityWalletSDK;
 
-        const string DAPP_DID = "did:ethr:rsk:testnet:0xD17de0e4288920F1BCCbED78f387a1e5e37BAE10";
-        const string IW_DID = "did:ethr:rsk:testnet:0xC2Cb8a25eD3F1f0d5ba2E506B0500fd8322aAF15";
-        const string IW_VM = "did:ethr:rsk:testnet:0xC2Cb8a25eD3F1f0d5ba2E506B0500fd8322aAF15#delegate-1";
+        const string DAPP_DID = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
+        const string IW_DID = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
+        const string IW_VM = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
         const string API_WALLET_USERNAME = "";
         const string API_WALLET_PWD = "";
@@ -37,15 +37,15 @@ namespace IdentityWallet.SDK.Example.Controllers
 
         public IdentityWalletController()
         {
-            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn);
+            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, "https://saas-qa.extrimian.com/services/sdk");
 
-            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD);
+            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD, "https://saas-qa.extrimian.com/services");
         }
 
         [HttpPost("create-did-change-owner")]
         public async Task<ActionResult<CreateDIDResponse>> CreateDIDChangeOwner(CreateDIDRequest request)
         {
-            var registry = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, "https://saas-qa.extrimian.com/services/did");
 
             var newDID = await registry.CreateDIDControlledBy(request.OwnerDid);
 
@@ -58,7 +58,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("add-assertion-method")]
         public async Task<ActionResult<SDKCommunicationMessage>> AddAssertionMethod(AddAssertionMethodRequest request)
         {
-            var registry = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, "https://saas-qa.extrimian.com/services/did");
 
             var content = await registry.GetAddAssertionMethodData(request.Did, new AssertionMethodData
             {
@@ -83,9 +83,9 @@ namespace IdentityWallet.SDK.Example.Controllers
         {
             var content = await IdentityWalletSDK.DecryptContent(request.Content);
 
-            var registry = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, "https://saas-qa.extrimian.com/services/did");
 
-            await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
+            var method = await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
             {
                 Algorithm = AlgorithmType.Secp256k1,
                 Base = Base.Hex,
@@ -244,7 +244,7 @@ namespace IdentityWallet.SDK.Example.Controllers
 
 
             var auth = await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod, VerificationRelationship.Authentication);
-            Console.WriteLine($"Authentication Verification Result: {capabilityDelegation}"); //Debe dar true ya que existe la entrada en el DID Document
+            Console.WriteLine($"Authentication Verification Result: {auth}"); //Debe dar true ya que existe la entrada en el DID Document
 
             if (result)
             {

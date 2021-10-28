@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  IW_FRONTEND_URL: "http://localhost:3000",
+  IW_FRONTEND_URL: "https://identity-wallet.apps-qa.extrimian.com",
   DAPP_API_URL: "http://localhost:5000/api",
 };
 
