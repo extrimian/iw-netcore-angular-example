@@ -26,26 +26,40 @@ namespace IdentityWallet.SDK.Example.Controllers
     {
         private IdentityWalletSDK IdentityWalletSDK;
 
-        const string DAPP_DID = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
-        const string IW_DID = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
-        const string IW_VM = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
+        private string DAPP_DID; // = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
+        private string IW_DID; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
+        private string IW_VM; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
-        const string API_WALLET_USERNAME = "";
-        const string API_WALLET_PWD = "";
+        private string API_WALLET_USERNAME; // = "anhmain@extrimian.com";
+        private string API_WALLET_PWD; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
+
+        private string SDK_API_URL; // = "https://saas-qa.extrimian.com/services/sdk";
+        private string API_URL; // = "https://saas-qa.extrimian.com/services";
+        private string DID_API_URL; // = "https://saas-qa.extrimian.com/services/did";
 
         public APIWallet APIWallet { get; set; }
 
         public IdentityWalletController()
         {
-            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, "https://saas-qa.extrimian.com/services/sdk");
+            DAPP_DID = Environment.GetEnvironmentVariable("DAPP_DID");
+            IW_DID = Environment.GetEnvironmentVariable("IW_DID");
+            IW_VM = Environment.GetEnvironmentVariable("IW_VM");
 
-            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD, "https://saas-qa.extrimian.com/services");
+            API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
+            API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
+
+            SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
+            API_URL = Environment.GetEnvironmentVariable("API_URL");
+
+            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_URL);
+
+            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD, API_URL);
         }
 
         [HttpPost("create-did-change-owner")]
         public async Task<ActionResult<CreateDIDResponse>> CreateDIDChangeOwner(CreateDIDRequest request)
         {
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, "https://saas-qa.extrimian.com/services/did");
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
 
             var newDID = await registry.CreateDIDControlledBy(request.OwnerDid);
 
@@ -58,7 +72,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("add-assertion-method")]
         public async Task<ActionResult<SDKCommunicationMessage>> AddAssertionMethod(AddAssertionMethodRequest request)
         {
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, "https://saas-qa.extrimian.com/services/did");
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
 
             var content = await registry.GetAddAssertionMethodData(request.Did, new AssertionMethodData
             {
@@ -83,7 +97,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         {
             var content = await IdentityWalletSDK.DecryptContent(request.Content);
 
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, "https://saas-qa.extrimian.com/services/did");
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
 
             var method = await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
             {
