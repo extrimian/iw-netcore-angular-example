@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 @Injectable({ providedIn: 'root' })
 export class IWService {
     iw: IdentityWallet;
-    controller = `${environment.DAPP_API_URL}/wallet`;
+    controller = `${environment.DAPP_API_URL}/identitywallet`;
 
     handshakeFinished: boolean = false;
 
