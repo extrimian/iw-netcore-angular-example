@@ -32,8 +32,8 @@ namespace IdentityWallet.SDK.Example.Controllers
         private string IW_DID; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
         private string IW_VM; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
-        private string API_WALLET_USERNAME; // = "anhmain@extrimian.com";
-        private string API_WALLET_PWD; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
+        private string API_WALLET_USERNAME;
+        private string API_WALLET_PWD;
 
         private string SDK_API_URL; // = "https://saas-qa.extrimian.com/services/sdk";
         private string API_URL; // = "https://saas-qa.extrimian.com/services";
