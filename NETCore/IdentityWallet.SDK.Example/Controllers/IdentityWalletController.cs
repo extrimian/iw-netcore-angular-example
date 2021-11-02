@@ -51,6 +51,7 @@ namespace IdentityWallet.SDK.Example.Controllers
 
             SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
             API_URL = Environment.GetEnvironmentVariable("API_URL");
+            DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
 
             IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_URL);
 
