@@ -36,8 +36,11 @@ namespace IdentityWallet.SDK.Example.Controllers
         private string API_WALLET_PWD; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
 
         private string SDK_API_URL; // = "https://saas-qa.extrimian.com/services/sdk";
+        private string SDK_API_KEY; // = "https://saas-qa.extrimian.com/services/sdk";
         private string API_URL; // = "https://saas-qa.extrimian.com/services";
+        private string API_KEY; // = "https://saas-qa.extrimian.com/services";
         private string DID_API_URL; // = "https://saas-qa.extrimian.com/services/did";
+        private string DID_API_KEY; // = "https://saas-qa.extrimian.com/services/did";
 
         public APIWallet APIWallet { get; set; }
 
@@ -50,12 +53,18 @@ namespace IdentityWallet.SDK.Example.Controllers
             API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
             API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
 
+            DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
+            DID_API_KEY = Environment.GetEnvironmentVariable("DID_API_KEY");
+
             SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
+            SDK_API_KEY = Environment.GetEnvironmentVariable("SDK_API_KEY");
+
             API_URL = Environment.GetEnvironmentVariable("API_URL");
+            API_KEY = Environment.GetEnvironmentVariable("API_KEY");
 
-            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_URL);
+            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_KEY, SDK_API_URL);
 
-            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD, API_URL);
+            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD, API_KEY, API_URL);
         }
 
         [HttpPost("create-did-change-owner")]

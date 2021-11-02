@@ -12,8 +12,11 @@ services:
         - API_WALLET_USERNAME=test
         - API_WALLET_PWD=123456
         - SDK_API_URL=https://saas-qa.extrimian.com/services/sdk
-        - API_URL=https://saas-qa.extrimian.com/services
+        - SDK_API_KEY=
+        - API_URL=https://saas-qa.extrimian.com/services/api
+        - API_KEY=
         - DID_API_URL=https://saas-qa.extrimian.com/services/did
+        - DID_API_KEY=
     iw-front:
       image: iw.front
       container_name: iw.front
