@@ -6,6 +6,7 @@ using IdentityWallet.SDK.Example.Models;
 using IdentityWallet.SDK.Models;
 using IdentityWallet.SDK.Models.DIDCommMessages;
 using IdentityWallet.SDK.Models.Requests;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -20,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace IdentityWallet.SDK.Example.Controllers
 {
+    [EnableCors("MyPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class IdentityWalletController : ControllerBase

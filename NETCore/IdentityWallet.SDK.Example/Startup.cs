@@ -27,7 +27,7 @@ namespace IdentityWallet.SDK.Example
         {
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
-                builder.WithOrigins("https://identity-wallet-qa-anh.extrimian.com/")
+                builder.AllowAnyOrigin()
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
