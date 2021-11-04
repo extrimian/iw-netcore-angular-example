@@ -51,6 +51,11 @@ export class IWService {
         console.log("Login finished");
     }
 
+    async logout() {
+        await this.iw.logout();
+    }
+
+
     send(message: string) {
         return this.iw.send(message);
     }
