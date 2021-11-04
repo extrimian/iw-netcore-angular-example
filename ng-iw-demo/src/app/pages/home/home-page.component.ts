@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { IWService } from 'src/app/services/iw.service';
 import { SignService } from 'src/app/services/sign.service';
@@ -13,7 +14,8 @@ export class HomePageComponent implements OnInit {
     mainDID?: string;
 
     constructor(private iwService: IWService,
-        private authService: AuthService) { }
+        private authService: AuthService,
+        private router: Router) { }
 
     async ngOnInit(): Promise<void> {
         this.mainAddress = await this.iwService.iw.getMainAddress();
@@ -44,5 +46,11 @@ export class HomePageComponent implements OnInit {
         const did = await this.authService.getDID();
         if (!did) throw new Error("Not did, please login");
         await this.iwService.addAssertionMethod(did);
+    }
+
+    async logout() {
+        await this.iwService.logout();
+        await this.router.navigate([""]);
+        window.location.reload();
     }
 }
