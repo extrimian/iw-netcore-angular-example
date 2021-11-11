@@ -70,7 +70,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("create-did-change-owner")]
         public async Task<ActionResult<CreateDIDResponse>> CreateDIDChangeOwner(CreateDIDRequest request)
         {
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var newDID = await registry.CreateDIDControlledBy(request.OwnerDid);
 
@@ -83,7 +83,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("add-assertion-method")]
         public async Task<ActionResult<SDKCommunicationMessage>> AddAssertionMethod(AddAssertionMethodRequest request)
         {
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var content = await registry.GetAddAssertionMethodData(request.Did, new AssertionMethodData
             {
@@ -108,7 +108,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         {
             var content = await IdentityWalletSDK.DecryptContent(request.Content);
 
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var method = await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
             {
