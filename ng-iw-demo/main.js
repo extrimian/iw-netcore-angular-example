@@ -23,6 +23,8 @@ const createWindow = () => {
     }
   });
 
+  mainWindow.openDevTools()
+
   mainWindow.webContents.on("did-create-window", (newWindow) =>{
     newWindow.center();
     newWindow.setMenuBarVisibility(false);
