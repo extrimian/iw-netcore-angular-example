@@ -17,6 +17,7 @@ services:
         - API_KEY=
         - DID_API_URL=https://saas-qa.extrimian.com/services/did
         - DID_API_KEY=
+        - LANGUAGE=en_EN
     iw-front:
       image: iw.front
       container_name: iw.front
