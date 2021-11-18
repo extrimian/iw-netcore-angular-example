@@ -8,20 +8,20 @@
   border: transparent;
   color: white;
   transition: 0.3s ease-in-out;
-  background-color: #94CC00;
+  background-color: #E30613;
   display: flex;
   align-items: center;
 }
 
 .button:hover{
   color: white;
-  background-color: #8fc501;
+  background-color: #d20611;
   cursor: pointer;
   box-shadow: 2px 5px 5px rgba(0,0,0,0.1);
 }
 
 .button[disabled]{
-  background-color: #cbef7c;
+  background-color: #eac0c3;
   cursor: default;
   box-shadow: none;
 }

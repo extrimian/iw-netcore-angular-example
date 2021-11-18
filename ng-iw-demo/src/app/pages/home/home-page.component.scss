@@ -19,7 +19,7 @@
 
 .title{
   margin-top: 20px;
-  color: #94CC00;
+  color: #E30613;
   margin-bottom: 10px;
   font-weight: bold;
   font-size: 30px;
@@ -28,12 +28,12 @@
 .background{
   position: absolute;
   z-index: -1;
-  width: 60%;
+  width: 20%;
   top: 50%;
   transform: translateY(-50%);
   right: 0;
-  margin-right: 120px;
-  filter: opacity(0.3);
+  margin-right: 350px;
+  filter: opacity(0.3) blur(5px);
 }
 
 .did{
