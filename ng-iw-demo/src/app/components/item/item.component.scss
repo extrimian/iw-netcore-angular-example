@@ -1,0 +1,40 @@
+.loader{
+  height: 15px;
+  width: 15px;
+  border: 3px #94CC00 solid;
+  border-bottom: 3px transparent solid;
+  animation: infinite linear 1s rotate-loader;
+  border-radius: 50%;
+
+  @keyframes rotate-loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.title{
+  display: flex;
+  font-size: 18px;
+  color: #626467;
+  font-weight: bold;
+  align-items: center;
+}
+
+.container{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px;
+  margin-inline: 0;
+}
+
+.content{
+  font-size: 14px;
+  color: #787b7e;
+  font-weight: bold;
+}
+

@@ -1,0 +1,9 @@
+<div class="container">
+  <div class="title">
+    {{title}}
+  </div>
+  <div class="content">
+    <div *ngIf="loader && loading" class="loader"></div>
+    <ng-content></ng-content>
+  </div>
+</div>

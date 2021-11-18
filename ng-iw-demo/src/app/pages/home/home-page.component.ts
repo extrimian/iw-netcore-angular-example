@@ -6,51 +6,87 @@ import { SignService } from 'src/app/services/sign.service';
 
 @Component({
     selector: 'home-page',
-    templateUrl: 'home-page.component.html'
+    templateUrl: 'home-page.component.html',
+    styleUrls: ['home-page.component.scss']
 })
 
 export class HomePageComponent implements OnInit {
     mainAddress?: string;
     mainDID?: string;
+    loading = false;
+    handshake = false;
+    loadingMainAddress=false;
+    loadingMainDID = false;
 
-    constructor(private iwService: IWService,
+
+  constructor(private iwService: IWService,
         private authService: AuthService,
-        private router: Router) { }
+    ) { }
 
     async ngOnInit(): Promise<void> {
-        this.mainAddress = await this.iwService.iw.getMainAddress();
-        this.mainDID = await this.iwService.iw.getMainDID();
+      this.loadingMainAddress = true;
+      this.loadingMainDID = true;
+      this.loading = true;
+
+      this.iwService.handshakeFinished.subscribe(message => {
+        if (message) {
+          this.handshake = message;
+          this.getMainAddress();
+          this.getMainDid();
+          this.loading = false;
+        }
+      });
+
+    }
+
+    ngOnDestroy() {
+    this.iwService.handshakeFinished.unsubscribe();
+   }
+
+    async getMainAddress (){
+      this.mainAddress = await this.iwService.iw.getMainAddress();
+      this.loadingMainAddress = false;
+    }
+
+    async getMainDid(){
+      this.mainDID = await this.iwService.iw.getMainDID();
+      this.loadingMainDID = false;
     }
 
     async sign() {
-        await this.iwService.sign();
+      this.loading = true;
+      await this.iwService.sign();
+      this.loading = false;
     }
 
     async extrSign() {
-        const response: any = await this.iwService.extrSign();
-        console.log(response);
-        await this.iwService.decryptContent(response.encryptedContent);
+      this.loading = true;
+      const response: any = await this.iwService.extrSign();
+      this.loading = false;
+      await this.iwService.decryptContent(response.encryptedContent);
     }
 
     async extrIdentitySign() {
-        const response: any = await this.iwService.extrIdentitySign();
-        await this.iwService.decryptContent(response.encryptedContent);
+      this.loading = true;
+      const response: any = await this.iwService.extrIdentitySign();
+      this.loading = false;
+      await this.iwService.decryptContent(response.encryptedContent);
     }
 
     async createDIDAndAddAssertionMethod() {
-        const did: any = await this.iwService.createDIDChangeOwner();
-        await this.iwService.addAssertionMethod(did);
+      this.loading = true;
+      const did: any = await this.iwService.createDIDChangeOwner();
+      this.loading = false;
+      await this.iwService.addAssertionMethod(did);
     }
 
     async addAssertionMethod() {
-        const did = await this.authService.getDID();
-        if (!did) throw new Error("Not did, please login");
-        await this.iwService.addAssertionMethod(did);
+      this.loading = true;
+      const did = await this.authService.getDID();
+      this.loading = false;
+      if (!did) throw new Error("Not did, please login");
+      await this.iwService.addAssertionMethod(did);
     }
 
-    async logout() {
-        await this.iwService.logout();
-        await this.router.navigate([""]);
-        window.location.reload();
-    }
+
 }

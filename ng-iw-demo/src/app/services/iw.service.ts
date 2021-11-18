@@ -4,15 +4,17 @@ import { Router } from '@angular/router';
 import { IdentityWallet, SDKOperationRequest, SDKResponse } from "@extrimian/identity-wallet";
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { BehaviorSubject } from 'rxjs';
+
 
 @Injectable({ providedIn: 'root' })
 export class IWService {
     iw: IdentityWallet;
     controller = `${environment.DAPP_API_URL}/identitywallet`;
 
-    handshakeFinished: boolean = false;
+    public handshakeFinished: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-    constructor(private router: Router,
+  constructor(private router: Router,
         private httpClient: HttpClient,
         private authService: AuthService,
     ) {
@@ -40,19 +42,17 @@ export class IWService {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/handshake`, state).toPromise();
         }, SDKOperationRequest.Handshake);
 
-        this.handshakeFinished = true;
+        this.handshakeFinished.next(true);
     }
 
     async login() {
         await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/vc-login`, state).toPromise();
         }, SDKOperationRequest.Login);
-
-        console.log("Login finished");
-    }
+   }
 
     async logout() {
-        await this.iw.logout();
+      await this.iw.logout();
     }
 
 
@@ -68,9 +68,7 @@ export class IWService {
         const result = await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/extr-sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent, "Extr");
-
         console.log(result);
-
         return result;
     }
 
@@ -78,9 +76,7 @@ export class IWService {
         const result = await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/extr-sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent, "Extr");
-
         console.log(result);
-
         return result;
     }
 
@@ -94,7 +90,6 @@ export class IWService {
         const result = await this.iw.sdkRequest(async (state) => {
             return await this.httpClient.post<SDKResponse>(`${this.controller}/sign-content`, state).toPromise();
         }, SDKOperationRequest.SignContent);
-
         console.log(result);
     }
 
