@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 40px;
 }
 
 .wrapper{
@@ -33,4 +34,14 @@
   right: 0;
   margin-right: 120px;
   filter: opacity(0.3);
+}
+
+.did{
+  font-size: 13px;
+  align-self: flex-end;
+  color: #626467;
+  margin-right: 10px;
+  font-weight: bold;
+
+
 }

@@ -6,26 +6,31 @@
     <app-item title="Main DID" [loading]="loadingMainDID" [loader]="true">{{mainDID}}</app-item>
 
     <div class="title">Sign</div>
-    <app-item title="Sign Content">
+    <!--<app-item title="Sign Content">
       <app-button [loading]="loading" (click)="sign()">Sign Content</app-button>
-    </app-item>
+    </app-item>-->
 
     <app-item title="Extrimian Sign Content">
       <app-button [loading]="loading" (click)="extrSign()">Extrimian Sign Content</app-button>
     </app-item>
 
-    <app-item title="Extrimian Identity Sign Content">
+    <!--<app-item title="Extrimian Identity Sign Content">
       <app-button [loading]="loading" (click)="extrIdentitySign()">Extrimian Identity <br/> Sign Content</app-button>
+    </app-item>-->
+
+    <app-item title="Create DID Owned by me">
+      <app-button [loading]="loading" [disabled]="!mainDID" (click)="createDID()">Create DID</app-button>
     </app-item>
 
-    <app-item title="Extrimian Decentralized Identity">
-      <app-button [loading]="loading" (click)="createDIDAndAddAssertionMethod()">Create DID Owned by me <br/> and
-        add VM</app-button>
+    <div class="did" *ngIf="did">{{did}}</div>
+
+    <app-item title="Add VM to did controlled by me">
+      <app-button [loading]="loading" [disabled]="!did" (click)="addAssertionMethod()">Add VM to did</app-button>
     </app-item>
 
-    <app-item title="Add Assertion Method">
+    <!--<app-item title="Add Assertion Method">
       <app-button [loading]="loading" (click)="addAssertionMethod()">Add Assertion Method</app-button>
-    </app-item>
+    </app-item>-->
 
   </div>
 </div>

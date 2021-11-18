@@ -17,6 +17,7 @@ export class HomePageComponent implements OnInit {
     handshake = false;
     loadingMainAddress=false;
     loadingMainDID = false;
+    did = "";
 
 
   constructor(private iwService: IWService,
@@ -73,20 +74,26 @@ export class HomePageComponent implements OnInit {
       await this.iwService.decryptContent(response.encryptedContent);
     }
 
-    async createDIDAndAddAssertionMethod() {
+    async createDID() {
       this.loading = true;
-      const did: any = await this.iwService.createDIDChangeOwner();
+      this.did = await this.iwService.createDIDChangeOwner();
       this.loading = false;
-      await this.iwService.addAssertionMethod(did);
+
     }
 
-    async addAssertionMethod() {
+    async addAssertionMethod(){
+      this.loading = true;
+      await this.iwService.addAssertionMethod(this.did);
+      this.loading = false;
+    }
+
+    /*async addAssertionMethod() {
       this.loading = true;
       const did = await this.authService.getDID();
       this.loading = false;
       if (!did) throw new Error("Not did, please login");
       await this.iwService.addAssertionMethod(did);
-    }
+    }*/
 
 
 }

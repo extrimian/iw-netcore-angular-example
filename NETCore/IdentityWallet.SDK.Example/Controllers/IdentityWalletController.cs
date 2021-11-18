@@ -28,19 +28,21 @@ namespace IdentityWallet.SDK.Example.Controllers
     {
         private IdentityWalletSDK IdentityWalletSDK;
 
-        private string DAPP_DID; // = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
-        private string IW_DID; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
-        private string IW_VM; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
+        private string DAPP_DID = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
+        private string IW_DID = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
+        private string IW_VM = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
-        private string API_WALLET_USERNAME; // = "anhmain@extrimian.com";
-        private string API_WALLET_PWD; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
+        private string API_WALLET_USERNAME= "anhmain@extrimian.com";
+        private string API_WALLET_PWD = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
 
-        private string SDK_API_URL; // = "https://saas-qa.extrimian.com/services/sdk";
-        private string SDK_API_KEY; // = "https://saas-qa.extrimian.com/services/sdk";
-        private string API_URL; // = "https://saas-qa.extrimian.com/services";
-        private string API_KEY; // = "https://saas-qa.extrimian.com/services";
-        private string DID_API_URL; // = "https://saas-qa.extrimian.com/services/did";
-        private string DID_API_KEY; // = "https://saas-qa.extrimian.com/services/did";
+        private string SDK_API_URL = "https://saas-qa.extrimian.com/services/sdk";
+        private string SDK_API_KEY = "7da50c78305311ec8d3d0242ac130003";
+        private string API_URL = "https://saas-qa.extrimian.com/services";
+        private string API_KEY = "";
+        private string DID_API_URL = "https://saas-qa.extrimian.com/services/did";
+        private string DID_API_KEY = "d5d6ddce305111ec8d3d0242ac130003";
+
+        private string LANGUAGE = "en_EN"; 
 
         public APIWallet APIWallet { get; set; }
 
@@ -61,6 +63,8 @@ namespace IdentityWallet.SDK.Example.Controllers
 
             API_URL = Environment.GetEnvironmentVariable("API_URL");
             API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+
+            LANGUAGE = Environment.GetEnvironmentVariable("LANGUAGE");
 
             IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_KEY, SDK_API_URL);
 
@@ -160,7 +164,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("handshake")]
         public async Task<ActionResult<SDKCommunicationMessage>> Handshake(SDKOperationInstance state)
         {
-            return await IdentityWalletSDK.Handshake(state, IWLanguage.es_ES);
+            return await IdentityWalletSDK.Handshake(state, (IWLanguage)Enum.Parse(typeof(IWLanguage), LANGUAGE));
         }
 
         [HttpPost("vc-login")]
