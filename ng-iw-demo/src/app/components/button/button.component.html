@@ -1,0 +1,4 @@
+<button type="button" class="button" [disabled]="loading || disabled" [ngStyle]="{minWidth: width, justifyContent: loading ? 'space-between' : 'center'}">
+  <div *ngIf="loading" class="loader"></div>
+  <ng-content></ng-content>
+</button>

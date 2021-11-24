@@ -1,19 +1,37 @@
-<h1>Welcome!</h1>
+<div class="container">
+  <div class="wrapper">
 
-<div style="text-align: center;">
-    <h3>Main Address</h3>
-    {{mainAddress}}
+    <div class="title">User info</div>
+    <app-item title="Main Address" [loading]="loadingMainAddress" [loader]="true">{{mainAddress}}</app-item>
+    <app-item title="Main DID" [loading]="loadingMainDID" [loader]="true">{{mainDID}}</app-item>
 
-    <h3>Sign Content</h3>
-    <button style="width: 100px; height: 40px;" (click)="sign()">Sign</button>
+    <div class="title">Sign</div>
+    <!--<app-item title="Sign Content">
+      <app-button [loading]="loading" (click)="sign()">Sign Content</app-button>
+    </app-item>-->
 
-    <h3>Extrimian Sign Content</h3>
-    <button style="width: 100px; height: 40px;" (click)="extrSign()">Extr Sign</button>
+    <app-item title="Extrimian Sign Content">
+      <app-button [loading]="loading" (click)="extrSign()">Extrimian Sign Content</app-button>
+    </app-item>
 
-    <h3>Extrimian Identity Sign Content</h3>
-    <button style="width: 100px; height: 40px;" (click)="extrIdentitySign()">Extr Identity Sign</button>
+    <!--<app-item title="Extrimian Identity Sign Content">
+      <app-button [loading]="loading" (click)="extrIdentitySign()">Extrimian Identity <br/> Sign Content</app-button>
+    </app-item>-->
 
-    <h3>Extrimian Decentralized Identity</h3>
-    <button style="width: 150px; height: 40px;" (click)="createDIDAndAddAssertionMethod()">Create DID Owned by Me and add VM</button><br><br>
-    <button style="width: 150px; height: 40px;" (click)="addAssertionMethod()">Add Assertion Method</button>
+    <app-item title="Create DID Owned by me">
+      <app-button [loading]="loading" [disabled]="!mainDID" (click)="createDID()">Create DID</app-button>
+    </app-item>
+
+    <div class="did" *ngIf="did">{{did}}</div>
+
+    <app-item title="Add VM to did controlled by me">
+      <app-button [loading]="loading" [disabled]="!did" (click)="addAssertionMethod()">Add VM to did</app-button>
+    </app-item>
+
+    <!--<app-item title="Add Assertion Method">
+      <app-button [loading]="loading" (click)="addAssertionMethod()">Add Assertion Method</app-button>
+    </app-item>-->
+
+  </div>
 </div>
+<img class="background" src="assets/home-illustr.png" alt="background"/>

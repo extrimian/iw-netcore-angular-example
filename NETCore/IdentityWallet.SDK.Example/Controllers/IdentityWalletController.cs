@@ -6,6 +6,7 @@ using IdentityWallet.SDK.Example.Models;
 using IdentityWallet.SDK.Models;
 using IdentityWallet.SDK.Models.DIDCommMessages;
 using IdentityWallet.SDK.Models.Requests;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -20,32 +21,60 @@ using System.Threading.Tasks;
 
 namespace IdentityWallet.SDK.Example.Controllers
 {
+    [EnableCors("MyPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class IdentityWalletController : ControllerBase
     {
         private IdentityWalletSDK IdentityWalletSDK;
 
-        const string DAPP_DID = "did:ethr:rsk:testnet:0xD17de0e4288920F1BCCbED78f387a1e5e37BAE10";
-        const string IW_DID = "did:ethr:rsk:testnet:0xC2Cb8a25eD3F1f0d5ba2E506B0500fd8322aAF15";
-        const string IW_VM = "did:ethr:rsk:testnet:0xC2Cb8a25eD3F1f0d5ba2E506B0500fd8322aAF15#delegate-1";
+        private string DAPP_DID = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
+        private string IW_DID = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
+        private string IW_VM = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
-        const string API_WALLET_USERNAME = "";
-        const string API_WALLET_PWD = "";
+        private string API_WALLET_USERNAME= "anhmain@extrimian.com";
+        private string API_WALLET_PWD = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
+
+        private string SDK_API_URL = "https://saas-qa.extrimian.com/services/sdk";
+        private string SDK_API_KEY = "7da50c78305311ec8d3d0242ac130003";
+        private string API_URL = "https://saas-qa.extrimian.com/services";
+        private string API_KEY = "";
+        private string DID_API_URL = "https://saas-qa.extrimian.com/services/did";
+        private string DID_API_KEY = "d5d6ddce305111ec8d3d0242ac130003";
+
+        private string LANGUAGE = "en_EN"; 
 
         public APIWallet APIWallet { get; set; }
 
         public IdentityWalletController()
         {
-            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn);
+            DAPP_DID = Environment.GetEnvironmentVariable("DAPP_DID");
+            IW_DID = Environment.GetEnvironmentVariable("IW_DID");
+            IW_VM = Environment.GetEnvironmentVariable("IW_VM");
 
-            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD);
+            API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
+            API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
+
+            DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
+            DID_API_KEY = Environment.GetEnvironmentVariable("DID_API_KEY");
+
+            SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
+            SDK_API_KEY = Environment.GetEnvironmentVariable("SDK_API_KEY");
+
+            API_URL = Environment.GetEnvironmentVariable("API_URL");
+            API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+
+            LANGUAGE = Environment.GetEnvironmentVariable("LANGUAGE");
+
+            IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_KEY, SDK_API_URL);
+
+            APIWallet = new APIWallet(API_WALLET_USERNAME, API_WALLET_PWD, API_KEY, API_URL);
         }
 
         [HttpPost("create-did-change-owner")]
         public async Task<ActionResult<CreateDIDResponse>> CreateDIDChangeOwner(CreateDIDRequest request)
         {
-            var registry = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var newDID = await registry.CreateDIDControlledBy(request.OwnerDid);
 
@@ -58,7 +87,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("add-assertion-method")]
         public async Task<ActionResult<SDKCommunicationMessage>> AddAssertionMethod(AddAssertionMethodRequest request)
         {
-            var registry = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var content = await registry.GetAddAssertionMethodData(request.Did, new AssertionMethodData
             {
@@ -83,9 +112,9 @@ namespace IdentityWallet.SDK.Example.Controllers
         {
             var content = await IdentityWalletSDK.DecryptContent(request.Content);
 
-            var registry = new ExtrimianRegistry();
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
-            await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
+            var method = await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
             {
                 Algorithm = AlgorithmType.Secp256k1,
                 Base = Base.Hex,
@@ -135,7 +164,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("handshake")]
         public async Task<ActionResult<SDKCommunicationMessage>> Handshake(SDKOperationInstance state)
         {
-            return await IdentityWalletSDK.Handshake(state, IWLanguage.es_ES);
+            return await IdentityWalletSDK.Handshake(state, (IWLanguage)Enum.Parse(typeof(IWLanguage), LANGUAGE));
         }
 
         [HttpPost("vc-login")]
@@ -244,7 +273,7 @@ namespace IdentityWallet.SDK.Example.Controllers
 
 
             var auth = await APIWallet.VerifySignContent(contentSigned.Message, contentSigned.SignedContent.Signature, contentSigned.VerificationMethod, VerificationRelationship.Authentication);
-            Console.WriteLine($"Authentication Verification Result: {capabilityDelegation}"); //Debe dar true ya que existe la entrada en el DID Document
+            Console.WriteLine($"Authentication Verification Result: {auth}"); //Debe dar true ya que existe la entrada en el DID Document
 
             if (result)
             {

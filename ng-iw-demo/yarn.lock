@@ -1189,10 +1189,10 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.3.tgz#90420f9f9c6d3987f176a19a7d8e764271a2f55d"
   integrity sha512-Fxt+AfXgjMoin2maPIYzFZnQjAXjAL0PHscM5pRTtatFqB+vZxAM9tLp2Optnuw3QOQC40jTNeGYFOMvyf7v9g==
 
-"@extrimian/identity-wallet@^1.0.14":
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/@extrimian/identity-wallet/-/identity-wallet-1.0.14.tgz#54c00800104c69f72149936b125b546246cdbb9b"
-  integrity sha512-VUgsLO4JH0z+wFiAsPzeZPrQGWqc908o6rC0nxSd8Ll1gf3XoBHPgLBgVHFIMZ4ogQIW+3mIIPLLkJfLS5GiQA==
+"@extrimian/identity-wallet@^1.1.0-alpha.0":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@extrimian/identity-wallet/-/identity-wallet-1.1.4.tgz#ad8a0414420dd4e7e5fa337ae31d47b989bea0f5"
+  integrity sha512-D9qhyTquNdIF8RwQWm+XckBaGqkEJeXg+S/MkX1NTZoKfsWZbiGaozZNVhGEJqVPCR9109kYA5LuxTomX2kTwQ==
   dependencies:
     axios "^0.21.1"
     cross-env "^7.0.3"

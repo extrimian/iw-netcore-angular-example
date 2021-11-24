@@ -1,0 +1,29 @@
+version: "3"
+services:
+    iw-api:
+      image: iw.api
+      container_name: iw.api
+      ports:
+        - "4005:5000"
+      environment:
+        - DAPP_DID=did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E
+        - IW_DID=did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57
+        - IW_VM=did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1
+        - API_WALLET_USERNAME=test
+        - API_WALLET_PWD=123456
+        - SDK_API_URL=https://saas-qa.extrimian.com/services/sdk
+        - SDK_API_KEY=
+        - API_URL=https://saas-qa.extrimian.com/services/api
+        - API_KEY=
+        - DID_API_URL=https://saas-qa.extrimian.com/services/did
+        - DID_API_KEY=
+        - LANGUAGE=en_EN
+    iw-front:
+      image: iw.front
+      container_name: iw.front
+      ports:
+        - "4000:80"
+      environment:
+        - IW_FRONTEND_URL=https://identity-wallet.apps-qa.extrimian.com
+      depends_on:
+        - iw-api

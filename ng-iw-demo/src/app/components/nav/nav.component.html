@@ -1,0 +1,8 @@
+<nav>
+  <div class="container">
+    <a routerLink="/"><img src="https://www.extrimian.com/assets/img/extrimian_logo.svg" alt="extrimian_logo" height="50px" class="img"/></a>
+    <app-button *ngIf="!route.includes('home')" (click)="login()" [loading]="loading || !handshake">login</app-button>
+    <app-button *ngIf="route.includes('home')" (click)="logout()" [loading]="loading || !handshake">logout</app-button>
+
+  </div>
+</nav>

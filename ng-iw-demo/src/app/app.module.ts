@@ -9,12 +9,18 @@ import { HomePageComponent } from './pages/home/home-page.component';
 import { LoginPageComponent } from './pages/login/login-page.component';
 import { AuthService } from './services/auth.service';
 import { AuthInterceptor } from './interceptors/auth-interceptor';
+import { ButtonComponent } from './components/button/button.component';
+import { NavComponent } from './components/nav/nav.component';
+import { ItemComponent } from './components/item/item.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomePageComponent,
     LoginPageComponent,
+    ButtonComponent,
+    NavComponent,
+    ItemComponent,
   ],
   imports: [
     BrowserModule,

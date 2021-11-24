@@ -3,7 +3,8 @@ import { IWService } from 'src/app/services/iw.service';
 
 @Component({
     selector: 'login-page',
-    templateUrl: 'login-page.component.html'
+    templateUrl: 'login-page.component.html',
+    styleUrls: ['./login-page.component.scss']
 })
 
 export class LoginPageComponent implements OnInit {

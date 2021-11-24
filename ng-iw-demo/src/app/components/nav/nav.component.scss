@@ -1,0 +1,23 @@
+nav{
+  background-color: rgba(255,255,255,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  border: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.container{
+  width: 85%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+a{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
