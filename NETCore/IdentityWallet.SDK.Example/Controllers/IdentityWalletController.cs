@@ -28,19 +28,19 @@ namespace IdentityWallet.SDK.Example.Controllers
     {
         private IdentityWalletSDK IdentityWalletSDK;
 
-        private string DAPP_DID; // = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
-        private string IW_DID; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
-        private string IW_VM; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
+        private string DAPP_DID = "did:ethr:rsk:testnet:0x8Bfea8277FD3acB2754cFaAc4c30c7010dA225FE"; // = "did:ethr:rsk:0x1AC246974C1751a7FCA08ceAFf04Af0007f3bf8E";
+        private string IW_DID = "did:ethr:rsk:testnet:0xdb2F915aac01168680d72518F210D91cbE833882"; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
+        private string IW_VM = "did:ethr:rsk:testnet:0xdb2F915aac01168680d72518F210D91cbE833882#delegate-1"; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
-        private string API_WALLET_USERNAME; // = "anhmain@extrimian.com";
-        private string API_WALLET_PWD; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
+        private string API_WALLET_USERNAME = "dappdemo@extrimian.com"; // = "anhmain@extrimian.com";
+        private string API_WALLET_PWD = "Pa$$word1"; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
 
-        private string SDK_API_URL; // = "https://saas-qa.extrimian.com/services/sdk";
-        private string SDK_API_KEY; // = "https://saas-qa.extrimian.com/services/sdk";
-        private string API_URL; // = "https://saas-qa.extrimian.com/services";
-        private string API_KEY; // = "https://saas-qa.extrimian.com/services";
-        private string DID_API_URL; // = "https://saas-qa.extrimian.com/services/did";
-        private string DID_API_KEY; // = "https://saas-qa.extrimian.com/services/did";
+        private string API_URL = "http://localhost:3005";
+        private string DID_API_URL = "http://localhost:3015";
+        private string SDK_API_URL = "http://localhost:3018";
+        private string DID_API_KEY = "";
+        private string SDK_API_KEY = "";
+        private string API_KEY = "";
 
         public APIWallet APIWallet { get; set; }
 
@@ -70,7 +70,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("create-did-change-owner")]
         public async Task<ActionResult<CreateDIDResponse>> CreateDIDChangeOwner(CreateDIDRequest request)
         {
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var newDID = await registry.CreateDIDControlledBy(request.OwnerDid);
 
@@ -83,7 +83,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         [HttpPost("add-assertion-method")]
         public async Task<ActionResult<SDKCommunicationMessage>> AddAssertionMethod(AddAssertionMethodRequest request)
         {
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var content = await registry.GetAddAssertionMethodData(request.Did, new AssertionMethodData
             {
@@ -92,7 +92,7 @@ namespace IdentityWallet.SDK.Example.Controllers
                 ExpiresIn = 31556952000,
                 Value = "0x5f093f1412d227bc8a34d267932b36e5eceb1edb4321d2d9964b24dd0a5b86e5"
             });
-
+            
             return await IdentityWalletSDK.ExtrSignContent(request.State, new ExtrSignContentRequest
             {
                 TemplateId = content.TemplateId,
@@ -108,7 +108,7 @@ namespace IdentityWallet.SDK.Example.Controllers
         {
             var content = await IdentityWalletSDK.DecryptContent(request.Content);
 
-            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_URL);
+            var registry = new ExtrimianRegistry(DIDCommPack, DIDCommUnpack, DID_API_KEY, DID_API_URL);
 
             var method = await registry.AddAssertionMethod(request.Did, new AssertionMethodSignedData
             {
@@ -201,58 +201,39 @@ namespace IdentityWallet.SDK.Example.Controllers
             return await IdentityWalletSDK.SignContent(state, "Este es el contenido a firmar");
         }
 
-        [HttpPost("extr-sign-content")]
-        public async Task<ActionResult<SDKCommunicationMessage>> ExtrSignContent(SDKOperationInstance state)
+        [HttpPost("transfer-nft")]
+        public async Task<ActionResult<SDKCommunicationMessage>> TransferNFT(TokenRequest tokenRequest)
         {
-            return await IdentityWalletSDK.ExtrSignContent(state, new ExtrSignContentRequest
+            return await IdentityWalletSDK.ExtrSignContent(tokenRequest.State, new ExtrSignContentRequest
             {
-                TemplateId = "change-owner",
                 Content = new ExtrSignContentData
                 {
-                    FriendlyContent = "Cambiar la propiedad de la identidad 0xD9001096218e4b7c30ec1B7C85A61AfAe3e450aD " +
-                                       "al address 0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
-                    FriendlyContentOrder = 5,
                     Data = new
-                    {
-                        header1 = new
-                        {
-                            type = "bytes1",
-                            value = "0x19",
-                        },
-                        header2 = new
-                        {
-                            type = "bytes1",
-                            value = "0x00"
-                        },
-                        registry = new
+                    {       
+                        from = new
                         {
                             type = "address",
-                            value = "0x7EEb5772eF87C40255a74C7cC05317C08eA64214"
-                        },
-                        registryNonce = new
-                        {
-                            type = "uint256",
-                            value = 0
-                        },
-                        identity = new
-                        {
-                            type = "address",
-                            value = "0xD9001096218e4b7c30ec1B7C85A61AfAe3e450aD"
+                            value = tokenRequest.FromAddress //"0xAeDc01B2245526F3Cae355688A31e67663405d04"
                         },
                         operation = new
                         {
                             type = "string",
-                            value = "changeOwner"
+                            value = "transfer"
                         },
-                        newOwner = new
+                        to = new
                         {
                             type = "address",
-                            value = "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7"
+                            value = tokenRequest.ToAddress //"0x9A9a48b9FF4d6F1E157f0cfa2C687a9947488B59"
+                        },
+                        token = new
+                        {
+                            type = "uint256",
+                            value = tokenRequest.TokenId
                         }
                     }
                 }
             });
-        }
+        }                
 
         [HttpPost("decrypt-content")]
         public async Task<ActionResult> DecryptContent(DecryptContentRequest decryptContentRequest)
