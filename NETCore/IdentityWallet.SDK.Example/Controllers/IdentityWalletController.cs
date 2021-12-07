@@ -49,23 +49,23 @@ namespace IdentityWallet.SDK.Example.Controllers
 
         public IdentityWalletController()
         {
-            //DAPP_DID = Environment.GetEnvironmentVariable("DAPP_DID");
-            //IW_DID = Environment.GetEnvironmentVariable("IW_DID");
-            //IW_VM = Environment.GetEnvironmentVariable("IW_VM");
+            DAPP_DID = Environment.GetEnvironmentVariable("DAPP_DID");
+            IW_DID = Environment.GetEnvironmentVariable("IW_DID");
+            IW_VM = Environment.GetEnvironmentVariable("IW_VM");
 
-            //API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
-            //API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
+            API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
+            API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
 
-            //DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
-            //DID_API_KEY = Environment.GetEnvironmentVariable("DID_API_KEY");
+            DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
+            DID_API_KEY = Environment.GetEnvironmentVariable("DID_API_KEY");
 
-            //SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
-            //SDK_API_KEY = Environment.GetEnvironmentVariable("SDK_API_KEY");
+            SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
+            SDK_API_KEY = Environment.GetEnvironmentVariable("SDK_API_KEY");
 
-            //API_URL = Environment.GetEnvironmentVariable("API_URL");
-            //API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+            API_URL = Environment.GetEnvironmentVariable("API_URL");
+            API_KEY = Environment.GetEnvironmentVariable("API_KEY");
 
-            //RELAYER_URL = Environment.GetEnvironmentVariable("RELAYER_URL");
+            RELAYER_URL = Environment.GetEnvironmentVariable("RELAYER_URL");
 
             IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_KEY, SDK_API_URL);
 
