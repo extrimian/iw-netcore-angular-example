@@ -11,10 +11,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,8 +34,8 @@ namespace IdentityWallet.SDK.Example.Controllers
         private string IW_DID = "did:ethr:rsk:testnet:0xdb2F915aac01168680d72518F210D91cbE833882"; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57";
         private string IW_VM = "did:ethr:rsk:testnet:0xdb2F915aac01168680d72518F210D91cbE833882#delegate-1"; // = "did:ethr:rsk:0xF3Fb96359A2586FD308aB1fe1B86BE3EA17b5F57#delegate-1";
 
-        private string API_WALLET_USERNAME = "dappdemo@extrimian.com"; // = "anhmain@extrimian.com";
-        private string API_WALLET_PWD = "Pa$$word1"; // = "VMDwyAVdnh5N8b!b4MXQy-XHE$NSKLwp";
+        private string API_WALLET_USERNAME = "dappdemo@extrimian.com";
+        private string API_WALLET_PWD = "Pa$$word1";
 
         private string API_URL = "http://localhost:3005";
         private string DID_API_URL = "http://localhost:3015";
@@ -41,26 +43,29 @@ namespace IdentityWallet.SDK.Example.Controllers
         private string DID_API_KEY = "";
         private string SDK_API_KEY = "";
         private string API_KEY = "";
+        private string RELAYER_URL = "https://saas-preprod.extrimian.com/services/relayer/transfernft?apikey=9028a094-53a8-11ec-bf63-0242ac130002";
 
         public APIWallet APIWallet { get; set; }
 
         public IdentityWalletController()
         {
-            DAPP_DID = Environment.GetEnvironmentVariable("DAPP_DID");
-            IW_DID = Environment.GetEnvironmentVariable("IW_DID");
-            IW_VM = Environment.GetEnvironmentVariable("IW_VM");
+            //DAPP_DID = Environment.GetEnvironmentVariable("DAPP_DID");
+            //IW_DID = Environment.GetEnvironmentVariable("IW_DID");
+            //IW_VM = Environment.GetEnvironmentVariable("IW_VM");
 
-            API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
-            API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
+            //API_WALLET_USERNAME = Environment.GetEnvironmentVariable("API_WALLET_USERNAME");
+            //API_WALLET_PWD = Environment.GetEnvironmentVariable("API_WALLET_PWD");
 
-            DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
-            DID_API_KEY = Environment.GetEnvironmentVariable("DID_API_KEY");
+            //DID_API_URL = Environment.GetEnvironmentVariable("DID_API_URL");
+            //DID_API_KEY = Environment.GetEnvironmentVariable("DID_API_KEY");
 
-            SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
-            SDK_API_KEY = Environment.GetEnvironmentVariable("SDK_API_KEY");
+            //SDK_API_URL = Environment.GetEnvironmentVariable("SDK_API_URL");
+            //SDK_API_KEY = Environment.GetEnvironmentVariable("SDK_API_KEY");
 
-            API_URL = Environment.GetEnvironmentVariable("API_URL");
-            API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+            //API_URL = Environment.GetEnvironmentVariable("API_URL");
+            //API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+
+            //RELAYER_URL = Environment.GetEnvironmentVariable("RELAYER_URL");
 
             IdentityWalletSDK = new IdentityWalletSDK(DAPP_DID, IW_DID, IW_VM, DIDCommPack, DIDCommUnpack, LoggedIn, SDK_API_KEY, SDK_API_URL);
 
@@ -120,6 +125,40 @@ namespace IdentityWallet.SDK.Example.Controllers
                 SignS = content.SignedContent.S,
                 SignV = int.Parse(content.SignedContent.V),
             });
+
+            return Ok();
+        }
+
+        [HttpPost("relayer-endpoint")]
+        public async Task<ActionResult<SDKCommunicationMessage>> RelayerEndpoint(DecryptContentRequest request)
+        {
+            var decryptedContent = await IdentityWalletSDK.DecryptContent(request.Content);
+            var relayerContent = new
+            {
+                extrTransactionData = new
+                {
+                    apiKey = "apikey_123",
+                    chainId = 31,
+                    to = request.SmartContractAddress,
+                    gasLimit = 400000,
+                },
+                transferNFTData = new
+                {
+                    from = request.FromAddress,
+                    to = request.ToAddress,
+                    tokenId = request.TokenId,
+                    signR = decryptedContent.SignedContent.R,
+                    signS = decryptedContent.SignedContent.S,
+                    signV = int.Parse(decryptedContent.SignedContent.V)
+                }
+            };
+
+            HttpClient client = new HttpClient();
+            var json = JsonConvert.SerializeObject(relayerContent);
+            var content = new StringContent(json , Encoding.UTF8, "application/json");
+            
+            var response = await client.PostAsync(RELAYER_URL, content);
+            response.EnsureSuccessStatusCode();
 
             return Ok();
         }
@@ -213,7 +252,7 @@ namespace IdentityWallet.SDK.Example.Controllers
                         from = new
                         {
                             type = "address",
-                            value = tokenRequest.FromAddress //"0xAeDc01B2245526F3Cae355688A31e67663405d04"
+                            value = tokenRequest.FromAddress
                         },
                         operation = new
                         {
@@ -223,7 +262,7 @@ namespace IdentityWallet.SDK.Example.Controllers
                         to = new
                         {
                             type = "address",
-                            value = tokenRequest.ToAddress //"0x9A9a48b9FF4d6F1E157f0cfa2C687a9947488B59"
+                            value = tokenRequest.ToAddress
                         },
                         token = new
                         {
