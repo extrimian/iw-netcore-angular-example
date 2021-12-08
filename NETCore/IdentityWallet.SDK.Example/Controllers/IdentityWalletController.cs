@@ -255,15 +255,15 @@ namespace IdentityWallet.SDK.Example.Controllers
                             type = "address",
                             value = tokenRequest.FromAddress
                         },
-                        to = new
-                        {
-                            type = "address",
-                            value = tokenRequest.ToAddress
-                        },
                         operation = new
                         {
                             type = "string",
                             value = "transfer"
+                        },
+                        to = new
+                        {
+                            type = "address",
+                            value = tokenRequest.ToAddress
                         },
                         token = new
                         {
