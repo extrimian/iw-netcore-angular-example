@@ -245,24 +245,25 @@ namespace IdentityWallet.SDK.Example.Controllers
         {
             return await IdentityWalletSDK.ExtrSignContent(tokenRequest.State, new ExtrSignContentRequest
             {
-                Content = new ExtrSignContentData
-                {
+                TemplateId = "transfer-nft",
+                Content = new ExtrSignContentData  {
+                    
                     Data = new
-                    {       
+                    {
                         from = new
                         {
                             type = "address",
                             value = tokenRequest.FromAddress
                         },
-                        operation = new
-                        {
-                            type = "string",
-                            value = "transfer"
-                        },
                         to = new
                         {
                             type = "address",
                             value = tokenRequest.ToAddress
+                        },
+                        operation = new
+                        {
+                            type = "string",
+                            value = "transfer"
                         },
                         token = new
                         {
